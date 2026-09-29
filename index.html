@@ -1,1 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tus Flores Favoritas 🌹</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at center, #1b021a, #050008);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      cursor: pointer;
+    }
+
+    /* Estado 1: Inicial */
+    .step-initial {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .rose-icon {
+      width: 140px;
+      height: 140px;
+      filter: drop-shadow(0 0 15px rgba(255, 75, 110, 0.6));
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 75, 110, 0.6)); }
+      50% { transform: scale(1.1); filter: drop-shadow(0 0 25px rgba(255, 105, 135, 0.9)); }
+      100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 75, 110, 0.6)); }
+    }
+
+    .instruction {
+      font-size: 1.1rem;
+      color: #ffb3c1;
+      letter-spacing: 0.5px;
+      animation: fadeInOut 2s infinite ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* Estado 2: Revelado */
+    .step-revealed {
+      opacity: 0;
+      transform: scale(0.8);
+      pointer-events: none;
+      transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-revealed.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .caiman-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 30px 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .caiman-svg {
+      width: 180px;
+      height: 180px;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    .main-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-top: 15px;
+      background: linear-gradient(45deg, #4ef0a3, #2cd8d5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+
+    .sub-title {
+      font-size: 1.25rem;
+      color: #ffe5ec;
+      margin-top: 10px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .tap-hint {
+      margin-top: 25px;
+      font-size: 0.85rem;
+      color: #a0a0a0;
+      font-style: italic;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="canvas"></canvas>
+
+  <div class="container" id="interactiveZone">
+    <!-- Estado Inicial -->
+    <div class="step-initial" id="stepInitial">
+      <svg class="rose-icon" viewBox="0 0 100 100">
+        <path fill="#ff2e63" d="M50 15 C35 5, 20 20, 25 35 C10 45, 15 65, 30 70 C40 85, 60 85, 70 70 C85 65, 90 45, 75 35 C80 20, 65 5, 50 15 Z"/>
+        <path fill="#ff6b81" d="M50 25 C40 18, 30 28, 35 38 C25 45, 30 58, 40 60 C50 70, 60 65, 65 58 C73 52, 72 40, 65 38 C70 28, 60 18, 50 25 Z"/>
+        <path fill="#ffffff" opacity="0.3" d="M45 30 C40 30, 38 35, 42 40 C38 43, 40 50, 47 50 C50 50, 55 45, 52 40 C55 35, 50 30, 45 30 Z"/>
+        <path fill="#2e7d32" d="M50 70 L50 95 M50 80 Q35 75 30 85 M50 85 Q65 80 70 90" stroke="#2e7d32" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <p class="instruction">Toca aquí para ver tus flores favoritas 🌹</p>
+    </div>
+
+    <!-- Estado Revelado -->
+    <div class="step-revealed" id="stepRevealed">
+      <div class="caiman-card">
+        <!-- SVG Caimán tierno dentro de una flor -->
+        <svg class="caiman-svg" viewBox="0 0 200 200">
+          <!-- Hojas / Pétalos base -->
+          <path d="M40 150 Q100 190 160 150 Q180 120 160 100 Q100 140 40 100 Q20 120 40 150 Z" fill="#25a25a"/>
+          <path d="M20 130 Q100 180 180 130 Q190 100 170 80 Q100 120 30 80 Q10 100 20 130 Z" fill="#32be6a" opacity="0.8"/>
+          <!-- Agua -->
+          <ellipse cx="100" cy="140" rx="75" ry="20" fill="#48cae4" opacity="0.7"/>
+          <!-- Cuerpo del Caimán -->
+          <ellipse cx="100" cy="120" rx="55" ry="35" fill="#52b788"/>
+          <!-- Cabeza -->
+          <path d="M60 110 Q100 70 140 110 Q150 125 100 130 Q50 125 60 110 Z" fill="#74c69d"/>
+          <!-- Hocico y Dientes tiernos -->
+          <ellipse cx="100" cy="115" rx="30" ry="12" fill="#95d5b2"/>
+          <circle cx="90" cy="112" r="2" fill="#2d6a4f"/>
+          <circle cx="110" cy="112" r="2" fill="#2d6a4f"/>
+          <!-- Ojos grandes y tiernos -->
+          <circle cx="80" cy="90" r="14" fill="#ffffff"/>
+          <circle cx="120" cy="90" r="14" fill="#ffffff"/>
+          <circle cx="82" cy="90" r="8" fill="#1b4332"/>
+          <circle cx="118" cy="90" r="8" fill="#1b4332"/>
+          <circle cx="85" cy="87" r="3" fill="#ffffff"/>
+          <circle cx="121" cy="87" r="3" fill="#ffffff"/>
+          <!-- Mejillitas sonrojadas -->
+          <ellipse cx="70" cy="102" rx="6" ry="4" fill="#ffb3c1" opacity="0.6"/>
+          <ellipse cx="130" cy="102" rx="6" ry="4" fill="#ffb3c1" opacity="0.6"/>
+          <!-- Flor / Rosa en la cabeza -->
+          <g transform="translate(115, 65) scale(0.4)">
+            <path fill="#ff2e63" d="M50 15 C35 5, 20 20, 25 35 C10 45, 15 65, 30 70 C40 85, 60 85, 70 70 C85 65, 90 45, 75 35 C80 20, 65 5, 50 15 Z"/>
+            <path fill="#ff6b81" d="M50 25 C40 18, 30 28, 35 38 C25 45, 30 58, 40 60 C50 70, 60 65, 65 58 C73 52, 72 40, 65 38 C70 28, 60 18, 50 25 Z"/>
+          </g>
+        </svg>
+
+        <h1 class="main-title">¡Glugluglu! 🐊</h1>
+        <p class="sub-title">¡Para la más linda!<br>Te amo ❤️</p>
+        <p class="tap-hint">(Toca la pantalla para hacer burbujas)</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuración del Canvas para efectos de partículas
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Arreglo de partículas (pétalos y burbujas)
+    const particles = [];
+    let isRevealed = false;
+
+    class Particle {
+      constructor(x, y, type) {
+        this.x = x || Math.random() * width;
+        this.y = y || (type === 'petal' ? -20 : height + 20);
+        this.type = type; // 'petal' o 'bubble'
+        this.size = type === 'petal' ? Math.random() * 8 + 6 : Math.random() * 12 + 8;
+        this.speedX = Math.random() * 2 - 1;
+        this.speedY = type === 'petal' ? Math.random() * 1.5 + 1 : -(Math.random() * 2 + 1);
+        this.rotation = Math.random() * 360;
+        this.rotSpeed = Math.random() * 2 - 1;
+        this.opacity = Math.random() * 0.7 + 0.3;
+        this.text = type === 'bubble' && Math.random() > 0.6 ? 'gluglu' : null;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.rotation += this.rotSpeed;
+
+        if (this.type === 'petal' && this.y > height + 20) {
+          this.y = -20;
+          this.x = Math.random() * width;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rotation * Math.PI) / 180);
+        ctx.globalAlpha = this.opacity;
+
+        if (this.type === 'petal') {
+          ctx.fillStyle = '#ff4d6d';
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(this.size, -this.size, this.size * 1.5, 0);
+          ctx.quadraticCurveTo(this.size, this.size, 0, 0);
+          ctx.fill();
+        } else if (this.type === 'bubble') {
+          ctx.strokeStyle = '#4ea8de';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = 'rgba(78, 168, 222, 0.15)';
+          ctx.fill();
+
+          if (this.text) {
+            ctx.fillStyle = '#72efdd';
+            ctx.font = '10px sans-serif';
+            ctx.fillText(this.text, -12, 3);
+          }
+        }
+
+        ctx.restore();
+      }
+    }
+
+    // Generar pétalos iniciales
+    for (let i = 0; i < 25; i++) {
+      particles.push(new Particle(null, null, 'petal'));
+    }
+
+    // Bucle de animación
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach((p, index) => {
+        p.update();
+        p.draw();
+
+        // Eliminar burbujas fuera de pantalla
+        if (p.type === 'bubble' && p.y < -30) {
+          particles.splice(index, 1);
+        }
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Lógica de interacción al tocar
+    const interactiveZone = document.getElementById('interactiveZone');
+    const stepInitial = document.getElementById('stepInitial');
+    const stepRevealed = document.getElementById('stepRevealed');
+
+    function handleTap(e) {
+      const x = e.clientX || (e.touches && e.touches[0].clientX) || width / 2;
+      const y = e.clientY || (e.touches && e.touches[0].clientY) || height / 2;
+
+      if (!isRevealed) {
+        isRevealed = true;
+        stepInitial.style.opacity = '0';
+        stepInitial.style.transform = 'scale(0.5)';
+
+        setTimeout(() => {
+          stepInitial.classList.add('hidden');
+          stepRevealed.classList.add('active');
+        }, 400);
+
+        // Lluvia extra de celebración
+        for (let i = 0; i < 20; i++) {
+          particles.push(new Particle(x, y, 'bubble'));
+        }
+      } else {
+        // Generar burbujas con texto "gluglu"
+        for (let i = 0; i < 4; i++) {
+          particles.push(new Particle(x + (Math.random() * 40 - 20), y + (Math.random() * 40 - 20), 'bubble'));
+        }
+      }
+    }
+
+    document.addEventListener('click', handleTap);
+    document.addEventListener('touchstart', (e) => {
+      handleTap(e);
+    }, { passive: true });
+  </script>
+</body>
+  </html>
