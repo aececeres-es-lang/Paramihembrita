@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Tus Flores Favoritas 🌹</title>
-  <!-- Carga de Three.js para renderizado 3D -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -20,24 +18,25 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: radial-gradient(circle at center, #1b021a, #050008);
+      background: #030005;
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    #canvas3d {
+    #heartCanvas {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       z-index: 5;
-      transition: opacity 1s ease, transform 1s ease;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      cursor: pointer;
     }
 
-    #canvas {
+    #bubbleCanvas {
       position: absolute;
       top: 0;
       left: 0;
@@ -57,41 +56,44 @@
       pointer-events: none;
     }
 
-    /* Estado 1: Inicial (Texto sobre la rosa 3D) */
+    /* Estado 1: Texto sobre el corazón 3D */
     .step-initial {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      height: 70vh;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-      pointer-events: auto;
-      cursor: pointer;
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      width: 90%;
+      max-width: 350px;
+      text-align: center;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
     }
 
     .instruction {
-      font-size: 1.2rem;
-      color: #ffb3c1;
+      font-size: 1.1rem;
+      color: #ff99ac;
       letter-spacing: 0.5px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 10px 20px;
-      border-radius: 20px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 179, 193, 0.2);
-      animation: fadeInOut 2s infinite ease-in-out;
+      background: rgba(15, 2, 10, 0.65);
+      padding: 12px 24px;
+      border-radius: 25px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 77, 109, 0.3);
+      box-shadow: 0 0 20px rgba(255, 46, 99, 0.2);
+      animation: pulseText 2s infinite ease-in-out;
     }
 
-    @keyframes fadeInOut {
-      0%, 100% { opacity: 0.6; transform: translateY(0); }
-      50% { opacity: 1; transform: translateY(-5px); }
+    @keyframes pulseText {
+      0%, 100% { opacity: 0.7; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-4px); }
     }
 
-    /* Estado 2: Revelado */
+    /* Estado 2: Revelado (Caimán) */
     .step-revealed {
       opacity: 0;
       transform: scale(0.8);
       pointer-events: none;
-      transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -105,11 +107,11 @@
 
     .caiman-card {
       background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 24px;
       padding: 30px 20px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -119,7 +121,7 @@
     .caiman-svg {
       width: 180px;
       height: 180px;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
       animation: float 3s ease-in-out infinite;
     }
 
@@ -160,18 +162,18 @@
 </head>
 <body>
 
-  <!-- Canvas 3D para la Rosa -->
-  <div id="canvas3d"></div>
+  <!-- Canvas para el Corazón 3D de Partículas -->
+  <canvas id="heartCanvas"></canvas>
 
-  <!-- Canvas 2D para Partículas -->
-  <canvas id="canvas"></canvas>
+  <!-- Canvas 2D para Partículas de fondo (pétalos / burbujas) -->
+  <canvas id="bubbleCanvas"></canvas>
+
+  <!-- Texto flotante inicial -->
+  <div class="step-initial" id="stepInitial">
+    <p class="instruction">Toca el corazón para ver tus flores favoritas 🌹</p>
+  </div>
 
   <div class="container" id="interactiveZone">
-    <!-- Estado Inicial -->
-    <div class="step-initial" id="stepInitial">
-      <p class="instruction">Toca la rosa para ver tus flores favoritas 🌹</p>
-    </div>
-
     <!-- Estado Revelado (Caimán) -->
     <div class="step-revealed" id="stepRevealed">
       <div class="caiman-card">
@@ -206,133 +208,112 @@
   </div>
 
   <script>
-    /* --- CONFIGURACIÓN DE LA ROSA 3D CON THREE.JS --- */
-    const container3d = document.getElementById('canvas3d');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container3d.appendChild(renderer.domElement);
+    /* --- CORAZÓN 3D DE PARTÍCULAS (PYTHON TURTLE PARAGUAS CONVERTIDO A JS CANVAS) --- */
+    const hCanvas = document.getElementById('heartCanvas');
+    const hCtx = hCanvas.getContext('2d');
 
-    // Iluminación
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffb3c1, 1.5);
-    dirLight.position.set(5, 10, 7);
-    scene.add(dirLight);
-
-    const pointLight = new THREE.PointLight(0xff2e63, 2.5, 20);
-    pointLight.position.set(0, 1, 3);
-    scene.add(pointLight);
-
-    // Grupo de la Rosa
-    const roseGroup = new THREE.Group();
-
-    // Tallo
-    const stemGeo = new THREE.CylinderGeometry(0.06, 0.08, 3.5, 16);
-    const stemMat = new THREE.MeshStandardMaterial({ color: 0x2d6a4f, roughness: 0.6 });
-    const stem = new THREE.Mesh(stemGeo, stemMat);
-    stem.position.y = -1.6;
-    roseGroup.add(stem);
-
-    // Hojas
-    function createLeaf(x, y, z, rotX, rotY, rotZ) {
-      const leafGeo = new THREE.PlaneGeometry(0.7, 1.2, 8, 8);
-      const pos = leafGeo.attributes.position;
-      for (let i = 0; i < pos.count; i++) {
-        let py = pos.getY(i);
-        pos.setZ(i, -Math.sin(py + 0.6) * 0.15);
-      }
-      leafGeo.computeVertexNormals();
-      const leafMat = new THREE.MeshStandardMaterial({ color: 0x40916c, side: THREE.DoubleSide, roughness: 0.5 });
-      const leaf = new THREE.Mesh(leafGeo, leafMat);
-      leaf.position.set(x, y, z);
-      leaf.rotation.set(rotX, rotY, rotZ);
-      return leaf;
-    }
-    roseGroup.add(createLeaf(0.3, -1.0, 0, 0.3, 0.5, -0.8));
-    roseGroup.add(createLeaf(-0.3, -1.8, 0, -0.3, -2.0, 0.8));
-
-    // Generador de Pétalos 3D
-    function createPetalGeometry(width, height, curve) {
-      const geo = new THREE.PlaneGeometry(width, height, 12, 12);
-      const p = geo.attributes.position;
-      for (let i = 0; i < p.count; i++) {
-        let x = p.getX(i);
-        let y = p.getY(i);
-        let z = -Math.pow(x / (width/2), 2) * curve + (y / height) * 0.1;
-        p.setZ(i, z);
-      }
-      geo.computeVertexNormals();
-      return geo;
-    }
-
-    const petalMat = new THREE.MeshStandardMaterial({
-      color: 0xd90429,
-      roughness: 0.35,
-      metalness: 0.1,
-      side: THREE.DoubleSide
-    });
-
-    // Construcción multicapa de la cabeza de la rosa
-    const numPetals = 40;
-    for (let i = 0; i < numPetals; i++) {
-      const progress = i / numPetals;
-      const size = 0.25 + progress * 0.75;
-      const curve = 0.1 + progress * 0.35;
-      
-      const petalGeo = createPetalGeometry(size, size * 1.3, curve);
-      const petal = new THREE.Mesh(petalGeo, petalMat);
-
-      const angle = i * 137.5 * (Math.PI / 180); // Ángulo Dorado
-      const radius = Math.pow(progress, 0.75) * 0.55;
-      
-      petal.position.x = Math.cos(angle) * radius;
-      petal.position.z = Math.sin(angle) * radius;
-      petal.position.y = progress * 0.35;
-
-      const tilt = Math.PI * 0.08 + progress * Math.PI * 0.38;
-      petal.rotation.y = -angle + Math.PI / 2;
-      petal.rotation.x = tilt;
-
-      roseGroup.add(petal);
-    }
-
-    scene.add(roseGroup);
-    camera.position.set(0, 0.2, 5.5);
-
-    // Animación de rotación 3D
-    let is3DActive = true;
-    function animate3D() {
-      if (is3DActive) {
-        requestAnimationFrame(animate3D);
-        roseGroup.rotation.y += 0.012; // Girar sobre su propio eje
-        roseGroup.rotation.x = Math.sin(Date.now() * 0.001) * 0.08; // Suave balanceo
-        renderer.render(scene, camera);
-      }
-    }
-    animate3D();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    /* --- CANVAS 2D DE PARTÍCULAS (PÉTALOS Y BURBUJAS) --- */
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
     let width, height;
-
-    function resizeCanvas() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+    function resizeHeartCanvas() {
+      width = hCanvas.width = window.innerWidth;
+      height = hCanvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+    window.addEventListener('resize', resizeHeartCanvas);
+    resizeHeartCanvas();
+
+    // Generar nube de puntos en 3D con la fórmula matemática del corazón
+    const NUM_POINTS = 3200;
+    const points = [];
+
+    for (let i = 0; i < NUM_POINTS; i++) {
+      const u = Math.random() * Math.PI * 2;
+      
+      // Ecuación paramétrica de corazón
+      const hx = 16 * Math.pow(Math.sin(u), 3);
+      const hy = 13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u);
+      
+      // Relleno de volumen interno y profundidad 3D
+      const r = Math.random();
+      const rad = Math.sqrt(r);
+      const x = hx * rad;
+      const y = hy * rad;
+      const z = (1 - rad) * (Math.random() * 12 - 6);
+
+      points.push({ x, y, z });
+    }
+
+    let theta = 0;
+    let isHeartActive = true;
+
+    function render3DHeart() {
+      if (!isHeartActive) return;
+
+      hCtx.clearRect(0, 0, width, height);
+
+      const cx = width / 2;
+      const cy = height / 2 - 20;
+      
+      // Escala adaptativa según tamaño de pantalla + Latido continuo
+      const baseScale = Math.min(width, height) / 38;
+      const heartbeat = 1 + 0.06 * Math.sin(Date.now() * 0.004);
+      const scale = baseScale * heartbeat;
+
+      const cosT = Math.cos(theta);
+      const sinT = Math.sin(theta);
+
+      // Proyectar puntos 3D -> 2D
+      const projected = [];
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        
+        // Rotación alrededor del eje Y
+        const xr = p.x * cosT + p.z * sinT;
+        const zr = -p.x * sinT + p.z * cosT;
+        const yr = p.y;
+
+        projected.push({
+          x: cx + xr * scale,
+          y: cy - yr * scale, // Invertir Y para coordenadas de pantalla
+          zr: zr,
+          depth: (zr + 12) / 24
+        });
+      }
+
+      // Ordenar por profundidad (Painter's algorithm)
+      projected.sort((a, b) => a.zr - b.zr);
+
+      // Dibujar partículas con gradiente de color brillante
+      for (let i = 0; i < projected.length; i++) {
+        const p = projected[i];
+        const depth = Math.max(0, Math.min(1, p.depth));
+        
+        // Interpolación cromática: Rojo profundo -> Rosa fosforescente
+        const rVal = 255;
+        const gVal = Math.floor(20 + depth * 80);
+        const bVal = Math.floor(60 + depth * 120);
+        
+        const size = (1.5 + depth * 2.2) * (scale / 12);
+
+        hCtx.fillStyle = `rgb(${rVal}, ${gVal}, ${bVal})`;
+        hCtx.beginPath();
+        hCtx.arc(p.x, p.y, size, 0, Math.PI * 2);
+        hCtx.fill();
+      }
+
+      theta += 0.025; // Velocidad de rotación
+      requestAnimationFrame(render3DHeart);
+    }
+    render3DHeart();
+
+    /* --- CANVAS DE BURBUJAS Y PÉTALOS EN SEGUNDO PLANO --- */
+    const bCanvas = document.getElementById('bubbleCanvas');
+    const bCtx = bCanvas.getContext('2d');
+
+    function resizeBubbleCanvas() {
+      bCanvas.width = window.innerWidth;
+      bCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeBubbleCanvas);
+    resizeBubbleCanvas();
 
     const particles = [];
     let isRevealed = false;
@@ -363,43 +344,43 @@
       }
 
       draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate((this.rotation * Math.PI) / 180);
-        ctx.globalAlpha = this.opacity;
+        bCtx.save();
+        bCtx.translate(this.x, this.y);
+        bCtx.rotate((this.rotation * Math.PI) / 180);
+        bCtx.globalAlpha = this.opacity;
 
         if (this.type === 'petal') {
-          ctx.fillStyle = '#ff4d6d';
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.quadraticCurveTo(this.size, -this.size, this.size * 1.5, 0);
-          ctx.quadraticCurveTo(this.size, this.size, 0, 0);
-          ctx.fill();
+          bCtx.fillStyle = '#ff4d6d';
+          bCtx.beginPath();
+          bCtx.moveTo(0, 0);
+          bCtx.quadraticCurveTo(this.size, -this.size, this.size * 1.5, 0);
+          bCtx.quadraticCurveTo(this.size, this.size, 0, 0);
+          bCtx.fill();
         } else if (this.type === 'bubble') {
-          ctx.strokeStyle = '#4ea8de';
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.fillStyle = 'rgba(78, 168, 222, 0.15)';
-          ctx.fill();
+          bCtx.strokeStyle = '#4ea8de';
+          bCtx.lineWidth = 1.5;
+          bCtx.beginPath();
+          bCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+          bCtx.stroke();
+          bCtx.fillStyle = 'rgba(78, 168, 222, 0.15)';
+          bCtx.fill();
 
           if (this.text) {
-            ctx.fillStyle = '#72efdd';
-            ctx.font = '10px sans-serif';
-            ctx.fillText(this.text, -12, 3);
+            bCtx.fillStyle = '#72efdd';
+            bCtx.font = '10px sans-serif';
+            bCtx.fillText(this.text, -12, 3);
           }
         }
-        ctx.restore();
+        bCtx.restore();
       }
     }
 
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 20; i++) {
       particles.push(new Particle(null, null, 'petal'));
     }
 
     function animateParticles() {
-      ctx.clearRect(0, 0, width, height);
+      bCtx.clearRect(0, 0, width, height);
       particles.forEach((p, index) => {
         p.update();
         p.draw();
@@ -411,7 +392,7 @@
     }
     animateParticles();
 
-    /* --- INTERACCIÓN Y TRANSICIÓN --- */
+    /* --- TRANSICIÓN DE PANTALLAS AL TOCAR --- */
     const stepInitial = document.getElementById('stepInitial');
     const stepRevealed = document.getElementById('stepRevealed');
 
@@ -422,17 +403,17 @@
       if (!isRevealed) {
         isRevealed = true;
         
-        // Transición de la rosa 3D
-        container3d.style.opacity = '0';
-        container3d.style.transform = 'scale(1.2)';
+        // Efecto de desvanecimiento del corazón 3D
+        hCanvas.style.opacity = '0';
+        hCanvas.style.transform = 'scale(1.3)';
         stepInitial.style.opacity = '0';
 
         setTimeout(() => {
-          container3d.classList.add('hidden');
+          hCanvas.classList.add('hidden');
           stepInitial.classList.add('hidden');
           stepRevealed.classList.add('active');
-          is3DActive = false; // Detener bucle 3D para ahorrar recursos
-        }, 800);
+          isHeartActive = false; // Detener bucle para ahorrar recursos
+        }, 700);
 
         for (let i = 0; i < 25; i++) {
           particles.push(new Particle(x, y, 'bubble'));
@@ -450,4 +431,4 @@
     }, { passive: true });
   </script>
 </body>
-  </html>
+            </html>
