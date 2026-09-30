@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Tus Flores Favoritas 🌹</title>
+  <title>Para Ti 🌹</title>
+  <!-- Tipografía elegante desde Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  
   <style>
     * {
       box-sizing: border-box;
@@ -17,8 +22,8 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #030005;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #120015, #030005);
       color: #fff;
       display: flex;
       justify-content: center;
@@ -36,7 +41,7 @@
       cursor: pointer;
     }
 
-    #bubbleCanvas {
+    #bgCanvas {
       position: absolute;
       top: 0;
       left: 0;
@@ -52,7 +57,7 @@
       text-align: center;
       padding: 20px;
       width: 90%;
-      max-width: 400px;
+      max-width: 420px;
       pointer-events: none;
     }
 
@@ -71,29 +76,30 @@
     }
 
     .instruction {
-      font-size: 1.1rem;
-      color: #ff99ac;
-      letter-spacing: 0.5px;
-      background: rgba(15, 2, 10, 0.65);
-      padding: 12px 24px;
-      border-radius: 25px;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 77, 109, 0.3);
-      box-shadow: 0 0 20px rgba(255, 46, 99, 0.2);
-      animation: pulseText 2s infinite ease-in-out;
+      font-size: 1rem;
+      font-weight: 300;
+      color: #ffd6e0;
+      letter-spacing: 1px;
+      background: rgba(18, 0, 21, 0.65);
+      padding: 12px 26px;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 183, 197, 0.25);
+      box-shadow: 0 0 25px rgba(255, 46, 99, 0.15);
+      animation: pulseText 2.5s infinite ease-in-out;
     }
 
     @keyframes pulseText {
-      0%, 100% { opacity: 0.7; transform: translateY(0); }
+      0%, 100% { opacity: 0.75; transform: translateY(0); }
       50% { opacity: 1; transform: translateY(-4px); }
     }
 
-    /* Estado 2: Revelado (Caimán) */
+    /* Estado 2: Tarjeta Elegante */
     .step-revealed {
       opacity: 0;
-      transform: scale(0.8);
+      transform: scale(0.85);
       pointer-events: none;
-      transition: all 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -105,54 +111,72 @@
       pointer-events: auto;
     }
 
-    .caiman-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
-      padding: 30px 20px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+    .elegant-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      border-radius: 28px;
+      padding: 45px 30px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 
+                  inset 0 0 20px rgba(255, 215, 0, 0.05);
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .caiman-svg {
-      width: 180px;
-      height: 180px;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
-      animation: float 3s ease-in-out infinite;
+    .elegant-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,183,197,0.08) 0%, transparent 60%);
+      pointer-events: none;
     }
 
-    @keyframes float {
+    /* Ilustración de Rosa Elegante */
+    .flower-icon {
+      width: 110px;
+      height: 110px;
+      filter: drop-shadow(0 0 20px rgba(255, 77, 109, 0.5));
+      animation: floatFlower 4s ease-in-out infinite;
+    }
+
+    @keyframes floatFlower {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-10px) rotate(2deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
     }
 
-    .main-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin-top: 15px;
-      background: linear-gradient(45deg, #4ef0a3, #2cd8d5);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: 1px;
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.6), transparent);
+      margin: 25px 0 22px 0;
     }
 
-    .sub-title {
+    .card-text {
+      font-family: 'Playfair Display', serif;
       font-size: 1.25rem;
-      color: #ffe5ec;
-      margin-top: 10px;
-      font-weight: 500;
-      line-height: 1.4;
+      font-style: italic;
+      color: #fff0f3;
+      line-height: 1.7;
+      letter-spacing: 0.3px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
     .tap-hint {
-      margin-top: 25px;
-      font-size: 0.85rem;
-      color: #a0a0a0;
-      font-style: italic;
+      margin-top: 32px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 300;
     }
 
     .hidden {
@@ -162,53 +186,59 @@
 </head>
 <body>
 
-  <!-- Canvas para el Corazón 3D de Partículas -->
+  <!-- Canvas Corazón 3D -->
   <canvas id="heartCanvas"></canvas>
 
-  <!-- Canvas 2D para Partículas de fondo (pétalos / burbujas) -->
-  <canvas id="bubbleCanvas"></canvas>
+  <!-- Canvas Destellos y Pétalos -->
+  <canvas id="bgCanvas"></canvas>
 
-  <!-- Texto flotante inicial -->
+  <!-- Texto inicial -->
   <div class="step-initial" id="stepInitial">
-    <p class="instruction">Toca el corazón para ver tus flores favoritas 🌹</p>
+    <p class="instruction">Toca el corazón para abrir tu detalle 🌹</p>
   </div>
 
   <div class="container" id="interactiveZone">
-    <!-- Estado Revelado (Caimán) -->
+    <!-- Estado Revelado Elegante -->
     <div class="step-revealed" id="stepRevealed">
-      <div class="caiman-card">
-        <svg class="caiman-svg" viewBox="0 0 200 200">
-          <path d="M40 150 Q100 190 160 150 Q180 120 160 100 Q100 140 40 100 Q20 120 40 150 Z" fill="#25a25a"/>
-          <path d="M20 130 Q100 180 180 130 Q190 100 170 80 Q100 120 30 80 Q10 100 20 130 Z" fill="#32be6a" opacity="0.8"/>
-          <ellipse cx="100" cy="140" rx="75" ry="20" fill="#48cae4" opacity="0.7"/>
-          <ellipse cx="100" cy="120" rx="55" ry="35" fill="#52b788"/>
-          <path d="M60 110 Q100 70 140 110 Q150 125 100 130 Q50 125 60 110 Z" fill="#74c69d"/>
-          <ellipse cx="100" cy="115" rx="30" ry="12" fill="#95d5b2"/>
-          <circle cx="90" cy="112" r="2" fill="#2d6a4f"/>
-          <circle cx="110" cy="112" r="2" fill="#2d6a4f"/>
-          <circle cx="80" cy="90" r="14" fill="#ffffff"/>
-          <circle cx="120" cy="90" r="14" fill="#ffffff"/>
-          <circle cx="82" cy="90" r="8" fill="#1b4332"/>
-          <circle cx="118" cy="90" r="8" fill="#1b4332"/>
-          <circle cx="85" cy="87" r="3" fill="#ffffff"/>
-          <circle cx="121" cy="87" r="3" fill="#ffffff"/>
-          <ellipse cx="70" cy="102" rx="6" ry="4" fill="#ffb3c1" opacity="0.6"/>
-          <ellipse cx="130" cy="102" rx="6" ry="4" fill="#ffb3c1" opacity="0.6"/>
-          <g transform="translate(115, 65) scale(0.4)">
-            <path fill="#ff2e63" d="M50 15 C35 5, 20 20, 25 35 C10 45, 15 65, 30 70 C40 85, 60 85, 70 70 C85 65, 90 45, 75 35 C80 20, 65 5, 50 15 Z"/>
-            <path fill="#ff6b81" d="M50 25 C40 18, 30 28, 35 38 C25 45, 30 58, 40 60 C50 70, 60 65, 65 58 C73 52, 72 40, 65 38 C70 28, 60 18, 50 25 Z"/>
-          </g>
+      <div class="elegant-card">
+        
+        <!-- Ilustración Vectorial de Rosa Elegante -->
+        <svg class="flower-icon" viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ff2e63"/>
+              <stop offset="50%" stop-color="#ff4d6d"/>
+              <stop offset="100%" stop-color="#800f2f"/>
+            </linearGradient>
+            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffe5ec"/>
+              <stop offset="100%" stop-color="#d4af37"/>
+            </linearGradient>
+          </defs>
+          
+          <path d="M50 55 Q50 85 48 95" stroke="#52b788" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M50 70 Q35 65 30 72 Q42 78 50 70" fill="#40916c"/>
+          <path d="M50 78 Q65 73 70 80 Q58 86 50 78" fill="#40916c"/>
+
+          <path d="M50 20 C25 10 15 35 25 55 C35 70 65 70 75 55 C85 35 75 10 50 20 Z" fill="url(#roseGrad)" opacity="0.95"/>
+          <path d="M50 25 C32 18 25 38 32 50 C40 60 60 60 68 50 C75 38 68 18 50 25 Z" fill="#ff4d6d"/>
+          <path d="M50 30 C38 25 34 40 40 46 C45 52 55 52 60 46 C66 40 62 25 50 30 Z" fill="url(#goldGrad)"/>
+          <path d="M50 34 C44 32 42 40 46 43 C48 45 52 45 54 43 C58 40 56 32 50 34 Z" fill="#ffccd5"/>
         </svg>
 
-        <h1 class="main-title">¡Glugluglu! 🐊</h1>
-        <p class="sub-title">¡Para la más linda!<br>Te amo ❤️</p>
-        <p class="tap-hint">(Toca la pantalla para hacer burbujas)</p>
+        <div class="divider"></div>
+        
+        <p class="card-text">
+          Quizás no son flores de jardín, pero estas fueron programadas y creadas pensando únicamente en ti.
+        </p>
+
+        <p class="tap-hint">Toca la pantalla para soltar destellos</p>
       </div>
     </div>
   </div>
 
   <script>
-    /* --- CORAZÓN 3D DE PARTÍCULAS (PYTHON TURTLE PARAGUAS CONVERTIDO A JS CANVAS) --- */
+    /* --- CORAZÓN 3D DE PARTÍCULAS --- */
     const hCanvas = document.getElementById('heartCanvas');
     const hCtx = hCanvas.getContext('2d');
 
@@ -220,18 +250,14 @@
     window.addEventListener('resize', resizeHeartCanvas);
     resizeHeartCanvas();
 
-    // Generar nube de puntos en 3D con la fórmula matemática del corazón
     const NUM_POINTS = 3200;
     const points = [];
 
     for (let i = 0; i < NUM_POINTS; i++) {
       const u = Math.random() * Math.PI * 2;
-      
-      // Ecuación paramétrica de corazón
       const hx = 16 * Math.pow(Math.sin(u), 3);
       const hy = 13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u);
       
-      // Relleno de volumen interno y profundidad 3D
       const r = Math.random();
       const rad = Math.sqrt(r);
       const x = hx * rad;
@@ -252,7 +278,6 @@
       const cx = width / 2;
       const cy = height / 2 - 20;
       
-      // Escala adaptativa según tamaño de pantalla + Latido continuo
       const baseScale = Math.min(width, height) / 38;
       const heartbeat = 1 + 0.06 * Math.sin(Date.now() * 0.004);
       const scale = baseScale * heartbeat;
@@ -260,36 +285,30 @@
       const cosT = Math.cos(theta);
       const sinT = Math.sin(theta);
 
-      // Proyectar puntos 3D -> 2D
       const projected = [];
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
-        
-        // Rotación alrededor del eje Y
         const xr = p.x * cosT + p.z * sinT;
         const zr = -p.x * sinT + p.z * cosT;
         const yr = p.y;
 
         projected.push({
           x: cx + xr * scale,
-          y: cy - yr * scale, // Invertir Y para coordenadas de pantalla
+          y: cy - yr * scale,
           zr: zr,
           depth: (zr + 12) / 24
         });
       }
 
-      // Ordenar por profundidad (Painter's algorithm)
       projected.sort((a, b) => a.zr - b.zr);
 
-      // Dibujar partículas con gradiente de color brillante
       for (let i = 0; i < projected.length; i++) {
         const p = projected[i];
         const depth = Math.max(0, Math.min(1, p.depth));
         
-        // Interpolación cromática: Rojo profundo -> Rosa fosforescente
         const rVal = 255;
-        const gVal = Math.floor(20 + depth * 80);
-        const bVal = Math.floor(60 + depth * 120);
+        const gVal = Math.floor(25 + depth * 75);
+        const bVal = Math.floor(70 + depth * 110);
         
         const size = (1.5 + depth * 2.2) * (scale / 12);
 
@@ -299,21 +318,21 @@
         hCtx.fill();
       }
 
-      theta += 0.025; // Velocidad de rotación
+      theta += 0.022;
       requestAnimationFrame(render3DHeart);
     }
     render3DHeart();
 
-    /* --- CANVAS DE BURBUJAS Y PÉTALOS EN SEGUNDO PLANO --- */
-    const bCanvas = document.getElementById('bubbleCanvas');
-    const bCtx = bCanvas.getContext('2d');
+    /* --- CANVAS DE DESTELLOS Y PÉTALOS (FONDO) --- */
+    const bgCanvas = document.getElementById('bgCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
 
-    function resizeBubbleCanvas() {
-      bCanvas.width = window.innerWidth;
-      bCanvas.height = window.innerHeight;
+    function resizeBgCanvas() {
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeBubbleCanvas);
-    resizeBubbleCanvas();
+    window.addEventListener('resize', resizeBgCanvas);
+    resizeBgCanvas();
 
     const particles = [];
     let isRevealed = false;
@@ -321,21 +340,26 @@
     class Particle {
       constructor(x, y, type) {
         this.x = x || Math.random() * width;
-        this.y = y || (type === 'petal' ? -20 : height + 20);
+        this.y = y || (type === 'petal' ? -20 : Math.random() * height);
         this.type = type;
-        this.size = type === 'petal' ? Math.random() * 8 + 6 : Math.random() * 12 + 8;
-        this.speedX = Math.random() * 2 - 1;
-        this.speedY = type === 'petal' ? Math.random() * 1.5 + 1 : -(Math.random() * 2 + 1);
+        this.size = type === 'petal' ? Math.random() * 7 + 5 : Math.random() * 3 + 1.5;
+        this.speedX = Math.random() * 1.5 - 0.75;
+        this.speedY = type === 'petal' ? Math.random() * 1.2 + 0.8 : -(Math.random() * 1.5 + 0.3);
         this.rotation = Math.random() * 360;
         this.rotSpeed = Math.random() * 2 - 1;
         this.opacity = Math.random() * 0.7 + 0.3;
-        this.text = type === 'bubble' && Math.random() > 0.5 ? 'gluglu' : null;
+        this.life = 100;
       }
 
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
         this.rotation += this.rotSpeed;
+
+        if (this.type === 'sparkle') {
+          this.life -= 1.2;
+          this.opacity = this.life / 100;
+        }
 
         if (this.type === 'petal' && this.y > height + 20) {
           this.y = -20;
@@ -344,47 +368,40 @@
       }
 
       draw() {
-        bCtx.save();
-        bCtx.translate(this.x, this.y);
-        bCtx.rotate((this.rotation * Math.PI) / 180);
-        bCtx.globalAlpha = this.opacity;
+        bgCtx.save();
+        bgCtx.translate(this.x, this.y);
+        bgCtx.rotate((this.rotation * Math.PI) / 180);
+        bgCtx.globalAlpha = Math.max(0, this.opacity);
 
         if (this.type === 'petal') {
-          bCtx.fillStyle = '#ff4d6d';
-          bCtx.beginPath();
-          bCtx.moveTo(0, 0);
-          bCtx.quadraticCurveTo(this.size, -this.size, this.size * 1.5, 0);
-          bCtx.quadraticCurveTo(this.size, this.size, 0, 0);
-          bCtx.fill();
-        } else if (this.type === 'bubble') {
-          bCtx.strokeStyle = '#4ea8de';
-          bCtx.lineWidth = 1.5;
-          bCtx.beginPath();
-          bCtx.arc(0, 0, this.size, 0, Math.PI * 2);
-          bCtx.stroke();
-          bCtx.fillStyle = 'rgba(78, 168, 222, 0.15)';
-          bCtx.fill();
-
-          if (this.text) {
-            bCtx.fillStyle = '#72efdd';
-            bCtx.font = '10px sans-serif';
-            bCtx.fillText(this.text, -12, 3);
-          }
+          bgCtx.fillStyle = '#ff4d6d';
+          bgCtx.beginPath();
+          bgCtx.moveTo(0, 0);
+          bgCtx.quadraticCurveTo(this.size, -this.size, this.size * 1.5, 0);
+          bgCtx.quadraticCurveTo(this.size, this.size, 0, 0);
+          bgCtx.fill();
+        } else if (this.type === 'sparkle') {
+          bgCtx.fillStyle = '#ffe5ec';
+          bgCtx.shadowColor = '#ffd700';
+          bgCtx.shadowBlur = 10;
+          bgCtx.beginPath();
+          bgCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+          bgCtx.fill();
         }
-        bCtx.restore();
+        bgCtx.restore();
       }
     }
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 22; i++) {
       particles.push(new Particle(null, null, 'petal'));
     }
 
     function animateParticles() {
-      bCtx.clearRect(0, 0, width, height);
+      bgCtx.clearRect(0, 0, width, height);
       particles.forEach((p, index) => {
         p.update();
         p.draw();
-        if (p.type === 'bubble' && p.y < -30) {
+        if (p.type === 'sparkle' && p.life <= 0) {
           particles.splice(index, 1);
         }
       });
@@ -392,7 +409,7 @@
     }
     animateParticles();
 
-    /* --- TRANSICIÓN DE PANTALLAS AL TOCAR --- */
+    /* --- TRANSICIÓN AL TOCAR LA PANTALLA --- */
     const stepInitial = document.getElementById('stepInitial');
     const stepRevealed = document.getElementById('stepRevealed');
 
@@ -403,24 +420,23 @@
       if (!isRevealed) {
         isRevealed = true;
         
-        // Efecto de desvanecimiento del corazón 3D
         hCanvas.style.opacity = '0';
-        hCanvas.style.transform = 'scale(1.3)';
+        hCanvas.style.transform = 'scale(1.25)';
         stepInitial.style.opacity = '0';
 
         setTimeout(() => {
           hCanvas.classList.add('hidden');
           stepInitial.classList.add('hidden');
           stepRevealed.classList.add('active');
-          isHeartActive = false; // Detener bucle para ahorrar recursos
+          isHeartActive = false;
         }, 700);
 
-        for (let i = 0; i < 25; i++) {
-          particles.push(new Particle(x, y, 'bubble'));
+        for (let i = 0; i < 35; i++) {
+          particles.push(new Particle(x + (Math.random() * 60 - 30), y + (Math.random() * 60 - 30), 'sparkle'));
         }
       } else {
-        for (let i = 0; i < 5; i++) {
-          particles.push(new Particle(x + (Math.random() * 40 - 20), y + (Math.random() * 40 - 20), 'bubble'));
+        for (let i = 0; i < 8; i++) {
+          particles.push(new Particle(x + (Math.random() * 40 - 20), y + (Math.random() * 40 - 20), 'sparkle'));
         }
       }
     }
@@ -431,4 +447,4 @@
     }, { passive: true });
   </script>
 </body>
-            </html>
+  </html>
